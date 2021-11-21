@@ -6,6 +6,6 @@ export type LinkCreate = {
 }
 
 export interface ILinkRepository {
-  findByShortUrl(url: string): Promise<Link>
+  findByShortUrl(url: string): Promise<Link | null>
   create: (input: LinkCreate) => Promise<Link>
 }
