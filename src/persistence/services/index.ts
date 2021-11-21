@@ -1,2 +1,2 @@
-export * from './cache.service'
-export * from './link.repository'
+export * from './cache.service';
+export * from './link.repository';

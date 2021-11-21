@@ -5,7 +5,6 @@ export type LinkDocument = Link & Document;
 
 @Schema()
 export class Link {
-
   @Prop()
   originalUrl: string;
 
@@ -14,7 +13,6 @@ export class Link {
 
   @Prop()
   visits: number;
-
 }
 
 export const LinkSchema = SchemaFactory.createForClass(Link);

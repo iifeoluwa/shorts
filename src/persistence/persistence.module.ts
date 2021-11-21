@@ -3,7 +3,6 @@ import { CacheModule, Module, Provider } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import * as redisStore from 'cache-manager-ioredis';
 
-
 import { Link, LinkSchema } from './schemas/link.schema';
 import { CacheServiceToken, LinkRepositoryToken } from 'src/config/constants';
 import { LinkRepository, CacheService } from './services';
@@ -11,12 +10,12 @@ import { LinkRepository, CacheService } from './services';
 const LinkRepositoryProvider: Provider = {
   provide: LinkRepositoryToken,
   useClass: LinkRepository,
-}
+};
 
 const CacheServiceProvider: Provider = {
   provide: CacheServiceToken,
-  useClass: CacheService
-}
+  useClass: CacheService,
+};
 
 @Module({
   imports: [
@@ -28,10 +27,10 @@ const CacheServiceProvider: Provider = {
         port: configService.get('cache.port'),
         ttl: configService.get('cache.ttl'),
       }),
-      inject: [ConfigService]
-    })
+      inject: [ConfigService],
+    }),
   ],
   providers: [LinkRepositoryProvider, CacheServiceProvider],
-  exports: [LinkRepositoryProvider, CacheServiceProvider]
+  exports: [LinkRepositoryProvider, CacheServiceProvider],
 })
-export class PersistenceModule { }
+export class PersistenceModule {}
