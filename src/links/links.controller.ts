@@ -1,12 +1,19 @@
-import { Controller, Get } from '@nestjs/common';
-import { AppService } from './app.service';
+import { Body, Controller, Get, HttpCode, Param, Post } from '@nestjs/common';
+import { CreateLinkDto } from './dtos/links.dto';
+import { LinksService } from './links.service';
 
-@Controller()
-export class AppController {
-  constructor(private readonly appService: AppService) {}
+@Controller('/links')
+export class LinksController {
+  constructor(private readonly linksService: LinksService) { }
 
-  @Get()
-  getHello(): string {
-    return this.appService.getHello();
+  @Get(':shortUrl')
+  getLink(@Param('shortUrl') shortUrl: string) {
+    return this.linksService.getOriginalUrl(shortUrl);
+  }
+
+  @Post()
+  @HttpCode(201)
+  createLink(@Body() { url }: CreateLinkDto) {
+    return this.linksService.createLink(url);
   }
 }

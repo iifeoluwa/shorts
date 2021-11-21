@@ -20,7 +20,7 @@ export class LinksService {
     @Inject(LinkRepositoryToken) private linksRepository: ILinkRepository,
     @Inject(CacheServiceToken) private cacheService: ICache,
     private config: ConfigService,
-  ) {}
+  ) { }
 
   async getOriginalUrl(shortUrl: string) {
     let originalUrl = await this.cacheService.get(shortUrl);
@@ -43,16 +43,22 @@ export class LinksService {
       this.cacheService.set(shortUrl, originalUrl);
     }
 
-    return originalUrl;
+    return { originalUrl };
   }
 
   async createLink(originalUrl: string) {
     try {
-      const shortUrl = await this.generateUniqueShortUrl();
-      const link = await this.linksRepository.create({ originalUrl, shortUrl });
-      this.cacheService.set(shortUrl, originalUrl);
+      const urlBase = this.config.get('app.urlBase');
+      const shortId = await this.generateUniqueShortUrl();
+      const link = { originalUrl, shortUrl: shortId }
 
-      return link;
+      await this.linksRepository.create(link);
+      this.cacheService.set(shortId, originalUrl);
+
+      return {
+        originalUrl,
+        shortUrl: `${urlBase}/${shortId}`
+      };
     } catch (error) {
       this.logger.error(
         'Error while processing link creation request',

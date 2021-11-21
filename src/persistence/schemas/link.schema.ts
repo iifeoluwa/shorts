@@ -11,7 +11,7 @@ export class Link {
   @Prop({ index: true })
   shortUrl: string;
 
-  @Prop()
+  @Prop({ default: 0 })
   visits: number;
 }
 
