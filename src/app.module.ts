@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 
 import configuration from './config/configuration';
-import { AppService } from './links/app.service';
+import { JobsModule } from './jobs/jobs.module';
 import { LinksModule } from './links/links.module';
 import { PersistenceModule } from './persistence/persistence.module';
 
@@ -12,9 +12,9 @@ import { PersistenceModule } from './persistence/persistence.module';
       isGlobal: true,
       load: [configuration],
     }),
+    JobsModule,
     LinksModule,
     PersistenceModule,
   ],
-  providers: [AppService],
 })
-export class AppModule { }
+export class AppModule {}

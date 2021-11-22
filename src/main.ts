@@ -13,7 +13,7 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe());
   app.enableVersioning({
     type: VersioningType.URI,
-    prefix: 'api/v'
+    prefix: 'api/v',
   });
 
   const docsConfig = new DocumentBuilder()
