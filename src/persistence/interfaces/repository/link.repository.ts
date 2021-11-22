@@ -1,11 +1,11 @@
 import { Link } from '..';
 
 export type LinkCreate = {
-  shortUrl: string;
+  shortId: string;
   originalUrl: string;
 };
 
 export interface ILinkRepository {
-  findByShortUrl(url: string): Promise<Link | null>;
+  findByShortId(id: string): Promise<Link | null>;
   create: (input: LinkCreate) => Promise<Link>;
 }

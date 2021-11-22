@@ -9,7 +9,7 @@ export class Link {
   originalUrl: string;
 
   @Prop({ index: true })
-  shortUrl: string;
+  shortId: string;
 
   @Prop({ default: 0 })
   visits: number;

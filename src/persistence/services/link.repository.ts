@@ -12,13 +12,13 @@ import {
 export class LinkRepository implements ILinkRepository {
   constructor(
     @InjectModel(LinkSchema.name) private linkModel: Model<LinkDocument>,
-  ) {}
+  ) { }
 
   create(input: LinkCreate) {
     return this.linkModel.create(input);
   }
 
-  findByShortUrl(shortUrl: string) {
-    return this.linkModel.findOne({ shortUrl }).exec();
+  findByShortId(shortId: string) {
+    return this.linkModel.findOne({ shortId }).exec();
   }
 }

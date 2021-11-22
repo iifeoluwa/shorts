@@ -14,13 +14,18 @@ import { ILinkRepository } from 'src/persistence/interfaces/repository/link.repo
 
 @Injectable()
 export class LinksService {
-  private logger: Logger = new Logger(LinksService.name);
+  private readonly urlBase: string;
+  private readonly shortIDLength: number;
+  private readonly logger: Logger = new Logger(LinksService.name);
 
   constructor(
     @Inject(LinkRepositoryToken) private linksRepository: ILinkRepository,
     @Inject(CacheServiceToken) private cacheService: ICache,
     private config: ConfigService,
-  ) { }
+  ) {
+    this.urlBase = this.config.get('app.urlBase');
+    this.shortIDLength = this.config.get<number>('app.shortIDLength');
+  }
 
   async getOriginalUrl(shortUrl: string) {
     let originalUrl = await this.cacheService.get(shortUrl);
@@ -29,7 +34,7 @@ export class LinksService {
       this.logger.log(
         `No cached entry found for url-${shortUrl}. Checking in db.`,
       );
-      const link = await this.linksRepository.findByShortUrl(shortUrl);
+      const link = await this.linksRepository.findByShortId(shortUrl);
 
       if (!link) {
         this.logger.log(`Entry for url-${shortUrl} not found in db.`);
@@ -48,16 +53,14 @@ export class LinksService {
 
   async createLink(originalUrl: string) {
     try {
-      const urlBase = this.config.get('app.urlBase');
-      const shortId = await this.generateUniqueShortUrl();
-      const link = { originalUrl, shortUrl: shortId }
+      const shortId = await this.generateUniqueShortID();
 
-      await this.linksRepository.create(link);
+      await this.linksRepository.create({ originalUrl, shortId });
       this.cacheService.set(shortId, originalUrl);
 
       return {
         originalUrl,
-        shortUrl: `${urlBase}/${shortId}`
+        shortUrl: `${this.urlBase}/${shortId}`
       };
     } catch (error) {
       this.logger.error(
@@ -70,23 +73,21 @@ export class LinksService {
     }
   }
 
-  async generateUniqueShortUrl() {
-    const shortUrlLength = this.config.get<number>('app.shortUrlLength');
-
+  async generateUniqueShortID() {
     this.logger.log(`Generating url identifier.`);
-    let shortUrl = await generateID(shortUrlLength);
-    let urlExists = await this.linksRepository.findByShortUrl(shortUrl);
+    let shortId = await generateID(this.shortIDLength);
+    let urlExists = await this.linksRepository.findByShortId(shortId);
     let collissions = 0;
 
     while (urlExists) {
-      shortUrl = await generateID(shortUrlLength);
-      urlExists = await this.linksRepository.findByShortUrl(shortUrl);
+      shortId = await generateID(this.shortIDLength);
+      urlExists = await this.linksRepository.findByShortId(shortId);
       collissions++;
     }
 
     this.logger.log(
       `Finished generating unique url identifier. Encountered ${collissions} collisions`,
     );
-    return shortUrl;
+    return shortId;
   }
 }
