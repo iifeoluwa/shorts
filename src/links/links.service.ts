@@ -6,11 +6,16 @@ import {
   Logger,
   NotFoundException,
 } from '@nestjs/common';
-import { CacheServiceToken, LinkRepositoryToken } from 'src/config/constants';
+import {
+  CacheServiceToken,
+  JobsServiceToken,
+  LinkRepositoryToken,
+} from 'src/config/constants';
 
 import { generateID } from 'src/utils/ids.util';
 import { ICache } from 'src/persistence/interfaces/cache.interface';
 import { ILinkRepository } from 'src/persistence/interfaces/repository/link.repository';
+import { IJobsService } from 'src/jobs/interfaces/jobs.interface';
 
 @Injectable()
 export class LinksService {
@@ -20,6 +25,7 @@ export class LinksService {
 
   constructor(
     @Inject(LinkRepositoryToken) private linksRepository: ILinkRepository,
+    @Inject(JobsServiceToken) private jobsService: IJobsService,
     @Inject(CacheServiceToken) private cacheService: ICache,
     private config: ConfigService,
   ) {
@@ -27,27 +33,28 @@ export class LinksService {
     this.shortIDLength = this.config.get<number>('app.shortIDLength');
   }
 
-  async getOriginalUrl(shortUrl: string) {
-    let originalUrl = await this.cacheService.get(shortUrl);
+  async getOriginalUrl(shortId: string) {
+    let originalUrl = await this.cacheService.get(shortId);
 
     if (!originalUrl) {
       this.logger.log(
-        `No cached entry found for url-${shortUrl}. Checking in db.`,
+        `No cached entry found for uid-${shortId}. Checking in db.`,
       );
-      const link = await this.linksRepository.findByShortId(shortUrl);
+      const link = await this.linksRepository.findByShortId(shortId);
 
       if (!link) {
-        this.logger.log(`Entry for url-${shortUrl} not found in db.`);
+        this.logger.log(`Entry for uid-${shortId} not found in db.`);
         throw new NotFoundException(`Invalid url`);
       }
 
       this.logger.log(
-        `Database entry found for url-${shortUrl}. Caching value...`,
+        `Database entry found for uid-${shortId}. Caching value...`,
       );
       originalUrl = link.originalUrl;
-      this.cacheService.set(shortUrl, originalUrl);
+      this.cacheService.set(shortId, originalUrl);
     }
 
+    this.jobsService.logUrlVisit(shortId);
     return { originalUrl };
   }
 
@@ -60,7 +67,7 @@ export class LinksService {
 
       return {
         originalUrl,
-        shortUrl: `${this.urlBase}/${shortId}`
+        shortUrl: `${this.urlBase}/${shortId}`,
       };
     } catch (error) {
       this.logger.error(
@@ -73,7 +80,7 @@ export class LinksService {
     }
   }
 
-  async generateUniqueShortID() {
+  private async generateUniqueShortID() {
     this.logger.log(`Generating url identifier.`);
     let shortId = await generateID(this.shortIDLength);
     let urlExists = await this.linksRepository.findByShortId(shortId);

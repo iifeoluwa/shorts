@@ -4,10 +4,10 @@ import { LinksService } from './links.service';
 
 @Controller({
   version: '1',
-  path: '/links'
+  path: '/links',
 })
 export class LinksController {
-  constructor(private readonly linksService: LinksService) { }
+  constructor(private readonly linksService: LinksService) {}
 
   @Get(':shortUrl')
   getLink(@Param('shortUrl') shortUrl: string) {

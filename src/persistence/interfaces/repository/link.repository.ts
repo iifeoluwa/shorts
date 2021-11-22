@@ -6,6 +6,7 @@ export type LinkCreate = {
 };
 
 export interface ILinkRepository {
-  findByShortId(id: string): Promise<Link | null>;
+  findByShortId(shortId: string): Promise<Link | null>;
   create: (input: LinkCreate) => Promise<Link>;
+  incrementVisit(shortId: string): Promise<Link | null>;
 }
