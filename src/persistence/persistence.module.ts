@@ -19,6 +19,12 @@ const CacheServiceProvider: Provider = {
 
 @Module({
   imports: [
+    MongooseModule.forRootAsync({
+      useFactory: (configService: ConfigService) => ({
+        uri: configService.get('database.url'),
+      }),
+      inject: [ConfigService],
+    }),
     MongooseModule.forFeature([{ name: Link.name, schema: LinkSchema }]),
     CacheModule.registerAsync({
       useFactory: (configService: ConfigService) => ({
