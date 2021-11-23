@@ -2,10 +2,6 @@
 
 ---
 
-###### What's this?
-
-Glad you asked. Basically a re-incarnation of `bit.ly` v1. Bu- buh- but whyyy? You ask. Why not? I respond.:D
-
 #### How to run
 
 Few steps are required to get up and running;
