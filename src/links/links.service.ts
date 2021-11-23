@@ -13,9 +13,8 @@ import {
 } from 'src/config/constants';
 
 import { generateID } from 'src/utils/ids.util';
-import { ICache } from 'src/persistence/interfaces/cache.interface';
-import { ILinkRepository } from 'src/persistence/interfaces/repository/link.repository';
 import { IJobsService } from 'src/jobs/interfaces/jobs.interface';
+import { ILinkRepository, ICache } from 'src/persistence/interfaces';
 
 @Injectable()
 export class LinksService {

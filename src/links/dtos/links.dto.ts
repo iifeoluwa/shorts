@@ -1,6 +1,16 @@
-import { IsString } from 'class-validator';
+import { IsString, IsUrl } from 'class-validator';
 
 export class CreateLinkDto {
-  @IsString()
+  @IsUrl()
   url: string;
+}
+
+export class GetOriginalUrlResponseDto {
+  @IsString()
+  originalUrl: string;
+}
+
+export class CreateLinkResponseDto extends GetOriginalUrlResponseDto {
+  @IsString()
+  shortUrl: string;
 }

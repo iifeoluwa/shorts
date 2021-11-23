@@ -1,8 +1,8 @@
 export default () => ({
   app: {
+    urlBase: process.env.LINK_BASE_URL,
     port: parseInt(process.env.PORT, 10) || 3000,
     shortIDLength: parseInt(process.env.SHORT_ID_LENGTH, 10) || 7,
-    urlBase: process.env.LINK_BASE_URL || 'tier.app',
   },
   database: {
     url: process.env.DATABASE_URL,
